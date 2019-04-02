@@ -1,0 +1,82 @@
+body, dl, dd, p, input, th, td, h1, h2, h3, h4, h5, h6, ul, ol, textarea, button {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+ul, ol {
+	list-style: none;
+}
+a {
+	display: block;
+	color: #000;
+	text-decoration: none;
+	cursor: pointer;
+}
+img {
+	width: 100%;
+	height: 100%;
+	border: none;
+}
+span {
+	display: inline-block;
+	vertical-align: top;
+}
+input, button {
+	outline: none;
+	border: none;
+}
+button {
+	background: #fff;
+}
+html {
+	width: 100%;
+	height: 100%;
+  	font-style: normal;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+body {
+	font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
+	background-color: #fff;
+}
+i,em {
+	font-style: normal;
+}
+h1,h2,h3,h4,h5,h6,b,strong{
+	font-weight: normal;
+}
+.mauto {
+	margin: 0 auto;
+}
+.fl {
+	float: left;
+}
+.fr {
+	float: right;
+}
+.overflow {
+	overflow: hidden;
+}
+.clearFix:after {
+	content: "";
+	height: 0;
+	line-height: 0;
+	font-size: 0;
+	display: block;
+	clear: both;
+	visibility: hidden;
+}
+.flex {
+	display: flex;
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -o-flex;
+	display: -ms-flex;
+}
+/* 用于flex布局，空标签占位 */
+.hidden {
+	visibility: hidden;
+}
+.none {
+	display: none;
+}
