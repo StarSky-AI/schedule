@@ -1,7 +1,7 @@
 <template>
 	<div class="menu">
         <div class="countdown flex">
-            <p class="flex">倒计时:{{current_time}}</p>
+            <p class="flex" v-if="end_time">倒计时 :&nbsp;<count-down :end-time="end_time*1000"></count-down></p>
             <p>一经选择不可修改，请慎重选择！</p>
 
         </div>
@@ -46,14 +46,17 @@
         p {
             color: #fff;
             span {               
-                padding: 0 3/@rem;
+                display: inline-block;
+                vertical-align: top;
+                position: relative;
+                bottom: 3/@rem;
+                width: 32/@rem;
                 height: 30/@rem;
                 line-height: 30/@rem;
                 text-align: center;               
                 border-radius: 5/@rem;
                 font-size: 18/@rem;
                 border: 1/@rem solid #fff;
-                margin-right: 5/@rem;
             }
             big {
                 padding: 0 3/@rem;
@@ -169,15 +172,15 @@
 </style>
 
 <script>
-import moment from 'moment';
+import countDown from '@/components/countdown'
 	export default {
         name: 'Menu',
+        components: {
+            countDown
+        },
 		data() {
             return {
-                current_time : moment.duration().asSeconds(),
                 end_time: '',
-                new_time: '',
-                endTime: '',
                 food: [],
                 isActive: false,
                 changeRed:-1,
@@ -249,7 +252,6 @@ import moment from 'moment';
                 console.log(res.data);
                 this.food = res.data.food;
                 this.end_time = res.data.end_time;
-                this.endTime = moment(end_time - this.moment ).format("YYYY-MM-DD HH:mm"); 
                 this.food.map((item) => {
                     item.is_select = false
                 })

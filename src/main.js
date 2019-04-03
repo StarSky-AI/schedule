@@ -14,8 +14,6 @@ import setaxios from './setaxios'
 setaxios()
 import Vant from 'vant';
 import 'vant/lib/index.css';
-import moment from 'moment';
-Vue.prototype.$moment = moment;
 Vue.use(Vant);
 new Vue({
   router,

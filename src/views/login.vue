@@ -51,10 +51,11 @@
 				position: relative;
 				input {
 					display: block;
+					width: 96%;
 					height: 44/@rem;
 					line-height: 44/@rem;
 					font-size: 16/@rem;
-					margin: 0 10/@rem;
+					margin-left: 10/@rem;
 				}
 				input::-webkit-input-placeholder {
 					font-size: 14/@rem;
@@ -69,7 +70,7 @@
 					font-size: 14/@rem;
 				}
 				input:-internal-autofill-selected {
-					-webkit-box-shadow: 0 0 0px 1000px white inset;
+					box-shadow: 0 0 0px 1000px white inset;
 					background-image: none !important;
 					color: rgb(0, 0, 0) !important;
 				}

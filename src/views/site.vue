@@ -1,35 +1,36 @@
 <template>
-	<div class="site">
+	<div class="menu">
         <div class="countdown flex">
-            <p class="flex">倒计时:</p>
+            <p class="flex" v-if="end_time">倒计时 :&nbsp;<count-down :end-time="end_time*1000"></count-down></p>
             <p>周五之前任意修改</p>
         </div>
-        <ul class="site-select">
-            <!-- <li v-for="(item, index) in food" :key="index" :class="{active:item.is_select}" @click="selectFood(item)">{{item.name}}</li> -->
-        </ul>
+        <van-tabs v-model="active" animated swipeable>
+            <van-tab title="周六">
+                <ul class="menu-select">
+                    <li v-for="(item, index) in site[0].site_id" :key="index" :class="{active1:item.is_select}" @click="selectFood(item)">{{item.name}}
+                    </li>
+                </ul>
+            </van-tab>
+            <van-tab title="周日">
+                <ul class="menu-select">
+                    <li v-for="(item, index) in site[1].site_id" :key="index" :class="{active1:item.is_select}" @click="selectFood(item)">{{item.name}}
+                    </li>
+                </ul>               
+            </van-tab>            
+        </van-tabs>
+
         <div class="sku flex">
-            <div>已选：</div>
-            <button @click="onSelect">提交</button>   
+            <div>已选：站点名称</div>
+            <button>提交</button>
+
         </div>
-        <van-actionsheet v-model="show" class="actionsheet">
-            <div class="box">
-                <h2 class="flex">
-                    <span>已选站点</span>
-                    <span><i></i>清空</span>
-                </h2>
-                <div class="flex" >
-                    <span>河北大街</span>
-                    <i></i>
-                </div>
-            </div>
-        </van-actionsheet>
 	</div>
 </template>
 
 <style lang="less">
     @rem: 100rem;
     .van-popup--bottom {
-        bottom: 70/@rem;
+        bottom: 50/@rem;
         z-index: 100;
     }
     .countdown {
@@ -43,14 +44,17 @@
         p {
             color: #fff;
             span {               
-                padding: 0 3/@rem;
+                display: inline-block;
+                vertical-align: top;
+                position: relative;
+                bottom: 3/@rem;
+                width: 32/@rem;
                 height: 30/@rem;
                 line-height: 30/@rem;
                 text-align: center;               
                 border-radius: 5/@rem;
                 font-size: 18/@rem;
                 border: 1/@rem solid #fff;
-                margin-right: 5/@rem;
             }
             big {
                 padding: 0 3/@rem;
@@ -70,30 +74,33 @@
             margin-top: 10/@rem;
         }
     }
-    .site-select-select {
+    .menu-select {
         overflow: hidden;
         padding: 14/@rem 14/@rem;
         box-sizing: border-box;
         text-align: center;
-        column-width: 3;
+        column-width: 80/@rem;
         li {
-            height: 40/@rem;
-            line-height: 40/@rem;
-            border: 1/@rem solid #000;
+            height: 30/@rem;
+            line-height: 30/@rem;
+            background: url("../assets/images/site/site_bg1.png") no-repeat;
+            background-size: 100% 30/@rem;
             margin-bottom: 10/@rem;
-            border-radius: 60/@rem;
+            border-radius: 4/@rem;
             box-sizing: border-box;
+            color: #fff;
+            font-size: 10/@rem;
         }
-        .active {
-            background: #ff9f27;
-            background: linear-gradient(#c21500,#ffc500);
+        .active1 {
+            background: url("../assets/images/site/site_bg2.png") no-repeat;
+            background-size: 100% 30/@rem;
             color: #fff;
             border: 1/@rem solid #fff;
         }
     }
     .sku {
-        height: 74/@rem;
-        line-height: 74/@rem;
+        height: 54/@rem;
+        line-height: 54/@rem;
         position: fixed;
         bottom: 0;
         left: 0;
@@ -103,7 +110,7 @@
             flex: 3;
             background: #4c4c4a;
             color: #fff;
-            text-indent: 59/@rem;
+            text-indent: 20/@rem;
             font-size: 20/@rem;
 
         }
@@ -114,6 +121,7 @@
             text-align: center;
         }
     }
+
     .actionsheet {
         .box {
             h2, div {
@@ -126,7 +134,8 @@
             h2 {
                 border-left: 5/@rem solid #55bc47;
                 background: #f4f4f4;
-                span {
+                font-size: 16/@rem;
+                span  {
                     position: relative;
                     color: #7a7a7a;
                     i {
@@ -160,27 +169,41 @@
         }
 
     }
+
 </style>
 
 <script>
+import countDown from '@/components/countdown'
 	export default {
-        name: 'Site',
+        name: 'Menu',
+        components: {
+            countDown
+        },
 		data() {
             return {
+                active: '',
+                site_id: [],
                 site: [],
-                show: false
+                end_time: '',
+                isActive: false,
             }
         },
-        computed: {
-
-        },
         methods: {
-            onSelect() {
-                // 点击选项时默认不会关闭菜单，可以手动关闭
-                this.show = true;
-            },
+            selectFood(item) {
+                //选中
+                item.is_select = !item.is_select  
+                console.log(item.is_select)
+                if(item.is_select == true) {
+                    this.num ++;
+                    
+                }else {
+                    this.num == 0;
+                }
+            }
         },
 		created() {
+            // let add_time = "2019-04-02";
+            
 			this.$http({
 				method: 'post',
                 url: '/api/weixin/site/index',
@@ -188,8 +211,8 @@
                     
                 }
 			}).then(res => {
-                console.log(res);
-                // this.site = res.data.
+                this.site = res.data.zhandian;
+                this.end_time = res.data.zhandian[0].end_time;
                 
 			}).catch(error => {
 				console.log(error);
