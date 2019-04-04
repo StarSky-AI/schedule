@@ -20,7 +20,7 @@
                 </h2>
                 <div class="flex" v-for="(item,index) in order" :key="index">
                     <span>{{item.name}}</span>
-                    <i @click="del(item.id)"></i>
+                    <i @click="del(item.food_id)"></i>
                 </div>
             </div>
 
@@ -215,6 +215,11 @@ import countDown from '@/components/countdown'
             },
             onSelect() {
                 // 点击选项时默认不会关闭菜单，可以手动关闭
+                if(!this.show) {
+                    this.show = true;
+                }else {
+                    console.log("提交")
+                }
                 this.show = true;
             },
             //清空
@@ -230,50 +235,28 @@ import countDown from '@/components/countdown'
             },
             //在方法中定义形参id,在标签中写入要循环的food_id  即可删除指定的
             del(id) {
-                // this.food.some(item => {
-                //     if(item.id === id) {
-                //         item.is_select = false;
-                //     }
-                    
-                // })
-                // console.log(this.order);
-                // return true;
-                let index = this.food.some(function(item) {
-                    if(item.id === id) {
+                
+                let index = this.food.findIndex((item) => {
+                    if(item.food_id == id) {
                         item.is_select = false;
-                    item.is_select.splice(this.item.is_select.find( item => {
-                    return orders.id === id;
-                }), 1);
+                        return true;
                     }
                     
                 })
-                //删除元素
-                
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                
-                // console.log(this.food);
+                if(index === -1){
+                    return console.log('删除失败');
+                }
+                this.order.splice(index,1);
+                this.num --;
             }
         },
 		created() {
             // let add_time = "2019-04-02";
             
 			this.$http({
-				method: 'post',
-                url: 'http://tsgc.qhd58.net/public/index.php/weixin/food/queryFoodList',
+                method: 'post',
+                // url: 'http://tsgc.qhd58.net/public/index.php/api/weixin/food/queryFoodList',
+                url: '/api/weixin/food/queryFoodList',
                 data: {
                     food_id: this.food.food_id
                 }

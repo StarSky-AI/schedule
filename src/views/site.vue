@@ -205,8 +205,9 @@ import countDown from '@/components/countdown'
             // let add_time = "2019-04-02";
             
 			this.$http({
-				method: 'post',
-                url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index',
+                method: 'post',
+                // url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index',
+                url: '/api/weixin/site/index',
                 data: {
                     
                 }
