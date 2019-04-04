@@ -15,14 +15,14 @@ module.exports = {
         open: true,
 
         proxy: {
-          '/api': {
-            target: 'http://tsgc.qhd58.net/public/',
-            ws: true,
-            changeOrigin: true,
-            pathRewrite: {
-              '^/api': ''
-            }
-          }
+          // '/api': {
+          //   target: 'http://tsgc.qhd58.net/public/index.php',
+          //   // ws: true,
+          //   // changeOrigin: true,
+          //   // pathRewrite: {
+          //   //   '^/api': ''
+          //   // }
+          // }
         }
 
     },

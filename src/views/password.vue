@@ -76,7 +76,7 @@
             revise() {
                 this.$http({
                     method: 'post',
-                    url: '/api/weixin/index/editPassword',
+                    url: 'http://tsgc.qhd58.net/public/index.php/weixin/index/editPassword',
                     data: {
                         id: window.localStorage.getItem('id'),
                         old: this.password,

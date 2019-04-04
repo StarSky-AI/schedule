@@ -11,7 +11,6 @@
         <div class="sku flex">
             <div>已选数量：{{num}}</div>
             <button @click="onSelect">提交</button>
-           
         </div>
         <van-actionsheet v-model="show" class="actionsheet">
             <div class="box">
@@ -21,7 +20,7 @@
                 </h2>
                 <div class="flex" v-for="(item,index) in order" :key="index">
                     <span>{{item.name}}</span>
-                    <i @click="del(item.food_id)"></i>
+                    <i @click="del(item.id)"></i>
                 </div>
             </div>
 
@@ -196,8 +195,11 @@ import countDown from '@/components/countdown'
                         order.push(item)
                     }
                 })
+                
                 return order
+               
             }
+            
         },
         methods: {
             selectFood(item) {
@@ -208,7 +210,7 @@ import countDown from '@/components/countdown'
                     this.num ++;
                     
                 }else {
-                    this.num == 0;
+                    this.num = 0;
                 }
             },
             onSelect() {
@@ -216,27 +218,54 @@ import countDown from '@/components/countdown'
                 this.show = true;
             },
             //清空
-            empty() {
-                this.food.map((item) => {
-                    item.is_select = false;
-                     this.num == 0;                 
-                }) 
+            empty(id) {
+                this.food.some(item => {
+                    if(item.id === id) {
+                        item.is_select = false;
+                    }     
+                })
                 this.show = false; 
-                this.num = 0;             
+                this.num = 0; 
+                return true;            
             },
             //在方法中定义形参id,在标签中写入要循环的food_id  即可删除指定的
             del(id) {
-                let index = this.food.findIndex((item) => {
-                    item.is_select = false;
-                    return item.food_id == id;                    
+                // this.food.some(item => {
+                //     if(item.id === id) {
+                //         item.is_select = false;
+                //     }
+                    
+                // })
+                // console.log(this.order);
+                // return true;
+                let index = this.food.some(function(item) {
+                    if(item.id === id) {
+                        item.is_select = false;
+                    item.is_select.splice(this.item.is_select.find( item => {
+                    return orders.id === id;
+                }), 1);
+                    }
+                    
                 })
-                if(index == -1) {
-                    return console.log("删除失败！");
-                }
-                //  this.num --;
-                 //这个是删除当前的  
-                // this.food.splice(index,1);
-                this.num --;
+                //删除元素
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                
+                // console.log(this.food);
             }
         },
 		created() {
@@ -244,7 +273,7 @@ import countDown from '@/components/countdown'
             
 			this.$http({
 				method: 'post',
-                url: '/api/weixin/food/queryFoodList',
+                url: 'http://tsgc.qhd58.net/public/index.php/weixin/food/queryFoodList',
                 data: {
                     food_id: this.food.food_id
                 }
