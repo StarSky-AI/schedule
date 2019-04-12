@@ -16,7 +16,7 @@ module.exports = {
 
         proxy: {
           '/api': {
-            target: 'http://tsgc.qhd58.net/public/index.php',
+            target: 'http://tsgc.qhd58.net/public/api',
             ws: true,
             changeOrigin: true,
             pathRewrite: {

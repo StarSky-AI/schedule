@@ -1,12 +1,15 @@
 <template>
 	<div class="menu">
         <div class="countdown flex">
-            <p class="flex" v-if="end_time">倒计时 :&nbsp;<count-down :end-time="end_time*1000"></count-down></p>
+            <p class="flex" v-if="end_time[3]">倒计时 :&nbsp;<count-down :end-time="end_time[3]*1000"></count-down></p>
             <p>一经选择不可修改，请慎重选择！</p>
 
         </div>
         <ul class="menu-select">
-            <li v-for="(item, index) in food" :key="index" :class="{active:item.is_select}" @click="selectFood(item)">{{item.name}}</li>
+            <li v-for="(item,index) in food" :key="index">
+                <h3>{{item.title}}</h3>
+                <div class="f"><div :class="{active:items.is_select}" v-for="(items,index) in item.food" :key="index" @click="selectFood(items)">{{items.name}}</div></div>
+            </li>
         </ul>
         <div class="sku flex">
             <div>已选数量：{{num}}</div>
@@ -18,9 +21,9 @@
                     <span>已选菜品</span>
                     <span @click="empty()"><i></i>清空</span>
                 </h2>
-                <div class="flex" v-for="(item,index) in order" :key="index">
-                    <span>{{item.name}}</span>
-                    <i @click="del(item.food_id)"></i>
+                <div class="flex" v-for="(key,index) in order" :key="index">
+                    <span>{{key.name}}</span>
+                    <i @click="del(key.food_id)"></i>
                 </div>
             </div>
 
@@ -79,15 +82,31 @@
         overflow: hidden;
         padding: 14/@rem 14/@rem;
         box-sizing: border-box;
-        text-align: center;
-        column-width: 100/@rem;
         li {
-            height: 40/@rem;
-            line-height: 40/@rem;
-            border: 1/@rem solid #000;
-            margin-bottom: 10/@rem;
-            border-radius: 60/@rem;
-            box-sizing: border-box;
+            h3 {
+                height: 29/@rem;
+                line-height: 29/@rem;
+                margin-bottom: 10/@rem;
+                &:before {
+                    content: '';
+
+                }
+            }
+            .f {
+                display: flex;
+                flex-wrap: wrap;
+                div {
+                    text-align: center;
+                    padding: 2/@rem 15/@rem;
+                    border: 1/@rem solid #000;
+                    margin-bottom: 10/@rem;
+                    border-radius: 60/@rem;
+                    box-sizing: border-box;
+                    margin-left: 15/@rem;
+                    margin-bottom: 15/@rem;
+                }
+
+            }
         }
         .active {
             background: #ff9f27;
@@ -189,28 +208,30 @@ import countDown from '@/components/countdown'
         },
         computed: {
             order() {
-                let order = [];
+                let order = [];                
+                console.log(this.food)
                 this.food.map(item => {
-                    if(item.is_select) {
-                        order.push(item)
-                    }
-                })
-                
-                return order
-               
-            }
-            
+                    item.food.map((key) => {
+                        if(key.is_select) {
+                            order.push(key)
+                        }
+                    })
+
+                })     
+                console.log(order);           
+                return order             
+            }            
         },
         methods: {
-            selectFood(item) {
+            selectFood(items) {
                 //选中
-                item.is_select = !item.is_select  
-                console.log(item.is_select)
-                if(item.is_select == true) {
+                items.is_select = !items.is_select  
+                console.log(items.is_select)
+                if(items.is_select == true) {
                     this.num ++;
                     
                 }else {
-                    this.num = 0;
+                    this.num --;
                 }
             },
             onSelect() {
@@ -223,25 +244,33 @@ import countDown from '@/components/countdown'
                 this.show = true;
             },
             //清空
-            empty(id) {
-                this.food.some(item => {
-                    if(item.id === id) {
-                        item.is_select = false;
-                    }     
+            empty() {
+                this.food.map((k) => {
+                    k.food.some((v) => {
+                        if(k.food_id) {
+                            item.is_select = false;
+                        }
+                    })
                 })
                 this.show = false; 
                 this.num = 0; 
-                return true;            
+                return true;  
+                // this.food.some(item => {
+                //     if(item.id === id) {
+                //         item.is_select = false;
+                //     }     
+                // })
+                // this.show = false; 
+                // this.num = 0; 
+                // return true;            
             },
             //在方法中定义形参id,在标签中写入要循环的food_id  即可删除指定的
-            del(id) {
-                
+            del(id) {                
                 let index = this.food.findIndex((item) => {
                     if(item.food_id == id) {
                         item.is_select = false;
                         return true;
-                    }
-                    
+                    }                    
                 })
                 if(index === -1){
                     return console.log('删除失败');
@@ -251,24 +280,17 @@ import countDown from '@/components/countdown'
             }
         },
 		created() {
-            // let add_time = "2019-04-02";
-            
 			this.$http({
                 method: 'post',
                 // url: 'http://tsgc.qhd58.net/public/index.php/api/weixin/food/queryFoodList',
-                url: '/api/weixin/food/queryFoodList',
-                data: {
-                    food_id: this.food.food_id
-                }
+                url: 'http://tsgc.qhd58.net/public/index.php/weixin/food/queryFoodList'
 			}).then(res => {
-                console.log(res.data);
-                this.food = res.data.food;
-                this.end_time = res.data.end_time;
-                this.food.map((item) => {
-                    item.is_select = false
+                this.end_time = res.data.map((item) => {
+                    return item.end_time;
                 })
-                // console.log(Is_select);
-                
+                console.log(this.end_time[3]);
+                this.food = res.data;  
+                console.log(this.food);              
 			}).catch(error => {
 				console.log(error);
 			})              

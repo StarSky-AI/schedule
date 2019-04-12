@@ -124,7 +124,7 @@
 		created() {
 			this.$http({
 				method: 'post',
-				url: '/api/weixin/index/queryNotice'
+				url: 'http://tsgc.qhd58.net/public/index.php/weixin/index/queryNotice'
 			}).then(res => {
 				this.inform = res.data;
 				console.log(res)

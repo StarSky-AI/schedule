@@ -207,7 +207,7 @@ import countDown from '@/components/countdown'
 			this.$http({
                 method: 'post',
                 // url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index',
-                url: '/api/weixin/site/index',
+                url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index',
                 data: {
                     
                 }
