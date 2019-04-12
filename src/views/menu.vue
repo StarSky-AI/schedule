@@ -19,11 +19,11 @@
             <div class="box">
                 <h2 class="flex">
                     <span>已选菜品</span>
-                    <span @click="empty()"><i></i>清空</span>
+                    <span @click="empty"><i></i>清空</span>
                 </h2>
-                <div class="flex" v-for="(key,index) in order" :key="index">
-                    <span>{{key.name}}</span>
-                    <i @click="del(key.food_id)"></i>
+                <div class="flex" v-for="(item,index) in order" :key="index">
+                    <span>{{item.name}}</span>
+                    <i @click="del(item.food_id)"></i>
                 </div>
             </div>
 
@@ -209,7 +209,7 @@ import countDown from '@/components/countdown'
         computed: {
             order() {
                 let order = [];                
-                console.log(this.food)
+                console.log(this.food,"213123")
                 this.food.map(item => {
                     item.food.map((key) => {
                         if(key.is_select) {
@@ -218,7 +218,7 @@ import countDown from '@/components/countdown'
                     })
 
                 })     
-                console.log(order);           
+                console.log(order,"``");           
                 return order             
             }            
         },
@@ -245,38 +245,34 @@ import countDown from '@/components/countdown'
             },
             //清空
             empty() {
-                this.food.map((k) => {
-                    k.food.some((v) => {
-                        if(k.food_id) {
-                            item.is_select = false;
-                        }
+                console.log(this.food,"food");
+                let food = this.food.map((item) => {
+                    item.food.map((childItem) => {
+                        childItem.is_select = false;
+                        return childItem;
                     })
+                    return item;
                 })
+                this.food = food;
                 this.show = false; 
                 this.num = 0; 
-                return true;  
-                // this.food.some(item => {
-                //     if(item.id === id) {
-                //         item.is_select = false;
-                //     }     
-                // })
-                // this.show = false; 
-                // this.num = 0; 
-                // return true;            
             },
             //在方法中定义形参id,在标签中写入要循环的food_id  即可删除指定的
-            del(id) {                
-                let index = this.food.findIndex((item) => {
-                    if(item.food_id == id) {
-                        item.is_select = false;
-                        return true;
-                    }                    
+            del(id) { 
+                let food = this.food.map((item) => {
+                    item.food.map((childItem) => {
+                        if(childItem.food_id === id) {
+                            childItem.is_select = false;
+                        }
+                        return childItem;
+                    })
+                    return item;
                 })
-                if(index === -1){
-                    return console.log('删除失败');
-                }
-                this.order.splice(index,1);
+                this.food = food;
                 this.num --;
+                if(this.num <= 0) {
+                    this.show = false;
+                }
             }
         },
 		created() {
@@ -288,9 +284,8 @@ import countDown from '@/components/countdown'
                 this.end_time = res.data.map((item) => {
                     return item.end_time;
                 })
-                console.log(this.end_time[3]);
                 this.food = res.data;  
-                console.log(this.food);              
+                console.log(res.data, "res.data");              
 			}).catch(error => {
 				console.log(error);
 			})              
