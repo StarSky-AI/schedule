@@ -13,7 +13,7 @@
         </ul>
         <div class="sku flex">
             <div>已选数量：{{num}}</div>
-            <button @click="onSelect">提交</button>
+            <button @click="onSelect" ref="myButton">提交</button>
         </div>
         <van-actionsheet v-model="show" class="actionsheet">
             <div class="box">
@@ -26,8 +26,8 @@
                     <i @click="del(item.food_id)"></i>
                 </div>
             </div>
-
         </van-actionsheet>
+        <van-popup v-model="show2" :close-on-click-overlay="false" style="width:200px;height:80px;line-height:80px;text-align:center;">本周已投票！</van-popup>
 	</div>
 </template>
 
@@ -191,6 +191,7 @@
 
 <script>
 import countDown from '@/components/countdown'
+import { Dialog } from 'vant';
 	export default {
         name: 'Menu',
         components: {
@@ -203,7 +204,9 @@ import countDown from '@/components/countdown'
                 isActive: false,
                 changeRed:-1,
                 show: false,
-                num : 0
+                show2: true,
+                num : 0,
+                message: null
             }
         },
         computed: {
@@ -235,13 +238,52 @@ import countDown from '@/components/countdown'
                 }
             },
             onSelect() {
-                // 点击选项时默认不会关闭菜单，可以手动关闭
+                // 点击选项时默认不会关闭菜单，可以手动关闭 
                 if(!this.show) {
                     this.show = true;
                 }else {
-                    console.log("提交")
+                let foodId = "",menuId="";
+                this.food.map((item) => {
+                item.food.map((childItem) => {
+                if(childItem.is_select === true) {
+                    foodId += childItem.food_id + "-";
+                    menuId = childItem.menu_id;
+                }
+                return childItem;
+                })
+                return item;
+                })
+                console.log(foodId)
+                console.log(menuId)  
+                    this.$http({
+                        method: 'post',
+                        url: 'http://tsgc.qhd58.net/public/index.php/weixin/food/foodVote',
+                        data: {
+                        id: window.localStorage.getItem('id'),
+                        food_id: foodId,
+                        menu_id: menuId
+                    }
+                    }).then(res => {
+                        
+                        if(res.result === true) {
+                            Dialog.alert({
+                                message: '投票成功！'
+                            }).then(() => {
+                                //刷新页面
+                                location. reload()
+                            });
+                        }
+                        else {
+                            this.$toast('请选择菜品！');
+                        }
+
+                        
+                    }).catch(error => {
+                        console.log(error);
+                    })  
                 }
                 this.show = true;
+
             },
             //清空
             empty() {
@@ -279,8 +321,17 @@ import countDown from '@/components/countdown'
 			this.$http({
                 method: 'post',
                 // url: 'http://tsgc.qhd58.net/public/index.php/api/weixin/food/queryFoodList',
-                url: 'http://tsgc.qhd58.net/public/index.php/weixin/food/queryFoodList'
+                url: 'http://tsgc.qhd58.net/public/index.php/weixin/food/queryFoodList',
+                data: {
+                    id: window.localStorage.getItem('id')
+                }
 			}).then(res => {
+                console.log(res);
+                this.message = res.msg;
+                if(this.message == 3) {
+                    this.show2 == true;
+                    this.$refs.myButton.disabled = true;
+                }
                 this.end_time = res.data.map((item) => {
                     return item.end_time;
                 })
@@ -288,7 +339,7 @@ import countDown from '@/components/countdown'
                 console.log(res.data, "res.data");              
 			}).catch(error => {
 				console.log(error);
-			})              
+			})            
         }
 	}
 </script>

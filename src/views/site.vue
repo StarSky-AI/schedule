@@ -21,13 +21,24 @@
 
         <div class="sku flex">
             <div>已选：站点名称</div>
-            <button>提交</button>
-
+            <button @click="onSelect">提交</button>
         </div>
+        <van-actionsheet v-model="show" class="actionsheet">
+            <div class="box">
+                <h2 class="flex">
+                    <span>已选菜品</span>
+                    <span @click="empty"><i></i>清空</span>
+                </h2>
+                <!-- <div class="flex" v-for="(item,index) in order" :key="index">
+                    <span>{{item.name}}</span>
+                    <i @click="del(item.food_id)"></i>
+                </div> -->
+            </div>
+        </van-actionsheet>
 	</div>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
     @rem: 100rem;
     .van-popup--bottom {
         bottom: 50/@rem;
@@ -183,6 +194,7 @@ import countDown from '@/components/countdown'
             return {
                 active: '',
                 site_id: [],
+                show: false,
                 site: [],
                 end_time: '',
                 isActive: false,
@@ -199,6 +211,9 @@ import countDown from '@/components/countdown'
                 }else {
                     this.num == 0;
                 }
+            },
+            onSelect() {
+                this.show = true;
             }
         },
 		created() {
@@ -213,7 +228,7 @@ import countDown from '@/components/countdown'
                 }
 			}).then(res => {
                 this.site = res.data.zhandian;
-                this.end_time = res.data.zhandian[0].end_time;
+                this.end_time = res.data.zhandian[1].end_time;
                 
 			}).catch(error => {
 				console.log(error);
