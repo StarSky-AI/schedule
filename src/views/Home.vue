@@ -3,20 +3,23 @@
 		<div class="banner">
 			<img :src="HomeImg.banner" alt="">
 		</div>
-		<div class="inform">
-			<i class="icon-laba"></i><h1>{{inform}}</h1>
-		</div>
+			<!-- <i class="icon-laba"></i><h1>{{inform}}</h1> -->
+			<van-notice-bar mode="closeable" left-icon="volume-o" style="height:37.5px;">
+				{{inform}}
+			</van-notice-bar>
 		<div class="menu">
 			<div class="menu-box">
-				<div class="cookbook" @click="cookbook()">
-					<img :src="MenuBg.bg" alt="">
+				<div class="flex">
+					<div class="cookbook" @click="cookbook()">
+						<img :src="MenuBg.bg" alt="">
+					</div>
+					<div class="site" @click="site()">
+						<img :src="MenuBg.bg2" alt="">
+					</div>
 				</div>
-				<div class="site" @click="site()">
-					<img :src="MenuBg.bg2" alt="">
+				<div class="revise" @click="password()">
+					<img :src="MenuBg.bg3" alt="">
 				</div>
-			</div>
-			<div class="revise" @click="password()">
-				<img :src="MenuBg.bg3" alt="">
 			</div>
 		</div>
 	</div>
@@ -24,49 +27,12 @@
 
 <style lang="less" scoped>
 	@rem: 100rem;
-	/*定义动画*/
-	@keyframes gundong {
-		from{
-			position: absolute;
-			left: 0;
-		}
-		to{
-			left: -400/@rem;
-		}
-	}
-	.banner {
-		
+	.banner {	
+		height: 220/@rem;	
 		img {
 			display: block;
 			width: 100%;
 			height: 100%;
-		}
-	}
-	.inform {
-		height: 54/@rem;
-		line-height: 54/@rem;
-		font-size: 10/@rem;
-		background: #f8f8f8;
-		position: relative;
-		.icon-laba {
-			display: block;
-			width: 40/@rem;
-			height: 54/@rem;
-			position: absolute;
-			left: 0;
-			background: url('../assets/images/home/laba.png') no-repeat;
-			background-size: 18/@rem;
-			background-position: 18/@rem 18/@rem;
-			background-color: #f8f8f8;
-			z-index: 999;
-		}
-		h1 {
-			padding-left: 44/@rem;
-			 overflow:hidden;
-			text-overflow:ellipsis;
-			white-space:nowrap;
-			animation: gundong 5s linear 0s infinite;
-
 		}
 	}
 	.menu {
@@ -75,7 +41,7 @@
 		box-sizing: border-box;
 		.cookbook, .site {
 			float: left;
-			width: 48%;
+			
 		}
 		.cookbook {
 			margin-right: 11/@rem;
@@ -89,6 +55,7 @@
 </style>
 
 <script>
+import { NoticeBar } from 'vant';
 	export default {
 		name: 'home',
 		components: {

@@ -31,10 +31,10 @@
 	</div>
 </template>
 
-<style lang="less">
+<style lang="less" scoped>
     @rem: 100rem;
     .van-popup--bottom {
-        bottom: 50/@rem;
+        bottom: 54/@rem;
         z-index: 100;
     }
     .countdown {

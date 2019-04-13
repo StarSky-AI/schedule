@@ -20,13 +20,13 @@
         right: 0;
         background: #f2f2f2;
         .sub {
-            height: 60/@rem;
-            line-height: 60/@rem;
-            background: #fff;
+            height: 50/@rem;
+            line-height: 50/@rem;
+            background: #f8f8f8;
             justify-content: space-between;
             padding: 0/@rem 20/@rem;
             border-bottom:2/@rem solid #f2f2f2;
-            font-size: 14/@rem;
+            font-size: 12/@rem;
         }
         .form {
             p {

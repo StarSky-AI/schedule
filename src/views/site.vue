@@ -18,21 +18,16 @@
                 </ul>               
             </van-tab>            
         </van-tabs>
-
         <div class="sku flex">
-            <div>已选：站点名称</div>
-            <button @click="onSelect">提交</button>
+            <div v-for="(items,index) in order" :key="index">已选：{{items.name}}</div>
+            <button @click="onSelect()">提交</button>
         </div>
         <van-actionsheet v-model="show" class="actionsheet">
             <div class="box">
                 <h2 class="flex">
-                    <span>已选菜品</span>
-                    <span @click="empty"><i></i>清空</span>
+                    <span>乘车人数：</span><van-stepper v-model="value" :title="people" />
+                    <span><i @click="del()"></i>删除</span>
                 </h2>
-                <!-- <div class="flex" v-for="(item,index) in order" :key="index">
-                    <span>{{item.name}}</span>
-                    <i @click="del(item.food_id)"></i>
-                </div> -->
             </div>
         </van-actionsheet>
 	</div>
@@ -41,7 +36,7 @@
 <style lang="less" scoped>
     @rem: 100rem;
     .van-popup--bottom {
-        bottom: 50/@rem;
+        bottom: 54/@rem;
         z-index: 100;
     }
     .countdown {
@@ -86,13 +81,15 @@
         }
     }
     .menu-select {
-        overflow: hidden;
         padding: 14/@rem 14/@rem;
         box-sizing: border-box;
         text-align: center;
-        column-width: 80/@rem;
+        display: flex;
+        flex-wrap: wrap;
         li {
+            width: 113/@rem;;
             height: 30/@rem;
+            margin-left: 2/@rem;
             line-height: 30/@rem;
             background: url("../assets/images/site/site_bg1.png") no-repeat;
             background-size: 100% 30/@rem;
@@ -193,27 +190,45 @@ import countDown from '@/components/countdown'
 		data() {
             return {
                 active: '',
-                site_id: [],
                 show: false,
                 site: [],
                 end_time: '',
                 isActive: false,
+                //计步器
+                value: 0,
+                people: '乘车人数'
             }
         },
+        computed: {
+            order() {
+                let order = [];                
+                this.site.map(item => {
+                    item.site_id.map((key) => {
+                        if(key.is_select === 1 ) {
+                            order.push(key.name)
+                        }
+                        return key;
+                    })
+
+                })     
+                console.log(order);           
+                return order             
+            }            
+        },
         methods: {
-            selectFood(item) {
-                //选中
-                item.is_select = !item.is_select  
-                console.log(item.is_select)
-                if(item.is_select == true) {
-                    this.num ++;
-                    
+            onSelect() {
+                if(!this.show) {
+                    this.show = true;
                 }else {
-                    this.num == 0;
+                    console.log("提交")
                 }
             },
-            onSelect() {
-                this.show = true;
+            select(index) {
+                this.isActive = index;
+            },
+            del() {
+                this.value = 1;
+                this.show = false;
             }
         },
 		created() {
@@ -227,9 +242,9 @@ import countDown from '@/components/countdown'
                     
                 }
 			}).then(res => {
+                console.log(res)
                 this.site = res.data.zhandian;
                 this.end_time = res.data.zhandian[1].end_time;
-                
 			}).catch(error => {
 				console.log(error);
 			})              

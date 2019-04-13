@@ -1,6 +1,6 @@
 <!--  author:   Date:  -->
 <template>
-  <div>
+  <div class="style" v-if="day">
     <span>{{day}}</span> : <span>{{hour}}</span> : <span>{{minute}}</span> : <span>{{second}}</span>
   </div>
 </template>
@@ -59,7 +59,7 @@ export default {
     endTime: {
       handler: function(newVal) {
         
-        if(newVal) {
+        if(newVal === 0) {
             clearTimeout(this.timeout)
             this.recordTime()
         }
@@ -70,5 +70,11 @@ export default {
 }
 
 </script>
-<style lang='scss' scoped>
+<style lang='less' scoped>
+  @rem: 100rem;
+  .style {
+    span {
+      border: 2/@rem solid #fff;
+    }
+  }
 </style>
