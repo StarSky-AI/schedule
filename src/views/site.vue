@@ -7,19 +7,19 @@
         <van-tabs v-model="active" animated swipeable>
             <van-tab title="周六">
                 <ul class="menu-select">
-                    <li v-for="(item, index) in site[0].site_id" :key="index" :class="{active1:item.is_select}" @click="selectFood(item)">{{item.name}}
+                    <li v-for="(item, index) in site[0].site_id" :key="index" :class="{active1:item.is_select}" @click="select(item,site[0].site_id,index)">{{item.name}}
                     </li>
                 </ul>
             </van-tab>
             <van-tab title="周日">
                 <ul class="menu-select">
-                    <li v-for="(item, index) in site[1].site_id" :key="index" :class="{active1:item.is_select}" @click="selectFood(item)">{{item.name}}
+                    <li v-for="(items, index) in site[1].site_id" :key="index" :class="{active1:items.is_select}" @click="select(items,site[1].site_id)">{{items.name}}
                     </li>
                 </ul>               
             </van-tab>            
         </van-tabs>
         <div class="sku flex">
-            <div v-for="(items,index) in order" :key="index">已选：{{items.name}}</div>
+            <div>已选：{{order}}</div>
             <button @click="onSelect()">提交</button>
         </div>
         <van-actionsheet v-model="show" class="actionsheet">
@@ -191,9 +191,10 @@ import countDown from '@/components/countdown'
             return {
                 active: '',
                 show: false,
-                site: [],
-                end_time: '',
                 isActive: false,
+                site: [{site_id:{}},{site_id:{}}],
+                end_time: '',
+                selectArray:[],
                 //计步器
                 value: 0,
                 people: '乘车人数'
@@ -201,19 +202,36 @@ import countDown from '@/components/countdown'
         },
         computed: {
             order() {
+                
                 let order = [];                
                 this.site.map(item => {
-                    item.site_id.map((key) => {
-                        if(key.is_select === 1 ) {
-                            order.push(key.name)
-                        }
-                        return key;
-                    })
+                    
+                    if(item.site_id && Object.keys(item.site_id).length){
+                        item.site_id.map((key) => {
+                            if(key){
+                                if(key.is_select === 1 ) {
+                                    order.push(key.name)
+                                }
+                                return key;
+                            }
 
+                        })
+                    }
                 })     
                 console.log(order);           
                 return order             
             }            
+        },
+        watch:{
+            site:{
+                handler(newValue,oldValue){
+                    if(newValue){
+
+                    }
+                },
+                immediate:true,
+                deep:true
+            }
         },
         methods: {
             onSelect() {
@@ -223,8 +241,17 @@ import countDown from '@/components/countdown'
                     console.log("提交")
                 }
             },
-            select(index) {
-                this.isActive = index;
+            select(item,list,index) {
+                let newList = list.map(s=>{
+                    if(s.site_id==item.site_id){
+                        s.is_select = !s.is_select;
+                        return s;
+                    }else{
+                        s.is_select = false;
+                        return s;
+                    }
+                    
+                })
             },
             del() {
                 this.value = 1;
@@ -243,6 +270,7 @@ import countDown from '@/components/countdown'
                 }
 			}).then(res => {
                 console.log(res)
+                
                 this.site = res.data.zhandian;
                 this.end_time = res.data.zhandian[1].end_time;
 			}).catch(error => {

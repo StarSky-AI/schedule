@@ -201,7 +201,6 @@ import { Dialog } from 'vant';
             return {
                 end_time: '',
                 food: [],
-                isActive: false,
                 changeRed:-1,
                 show: false,
                 show2: true,
