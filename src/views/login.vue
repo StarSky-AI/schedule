@@ -144,7 +144,6 @@ export default {
 		try {
 			const result = await this.$http({
 				method: 'post',
-				// url: 'http://tsgc.qhd58.net/public/index.php/weixin/login/login',
 				url: 'http://tsgc.qhd58.net/public/index.php/weixin/login/login',
 				data: {
 					id: this.model.id,

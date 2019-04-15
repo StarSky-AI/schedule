@@ -75,6 +75,9 @@ export default {
   .style {
     span {
       border: 2/@rem solid #fff;
+      display: inline-block;
+      width: 30/@rem;
+      text-align: center;
     }
   }
 </style>

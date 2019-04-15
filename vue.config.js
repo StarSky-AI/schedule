@@ -14,16 +14,16 @@ module.exports = {
         //自动打开浏览器
         open: true,
 
-        proxy: {
-          '/api': {
-            target: 'http://tsgc.qhd58.net/public/api',
-            ws: true,
-            changeOrigin: true,
-            pathRewrite: {
-              '^/api': ''
-            }
-          }
-        }
+        // proxy: {
+        //   '/api': {
+        //     target: 'http://tsgc.qhd58.net/public/api',
+        //     ws: true,
+        //     changeOrigin: true,
+        //     pathRewrite: {
+        //       '^/api': ''
+        //     }
+        //   }
+        // }
 
     },
 

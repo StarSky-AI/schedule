@@ -10,6 +10,7 @@ export default function setAxios() {
     axios.interceptors.request.use(
         //配置，从vuex那里拿token判断是否存在，存在就给后端带回去
         config => {
+            store.commit('showLoading')
             if(store.state.token) {
                 config.headers.token = store.state.token
             }
@@ -22,6 +23,7 @@ export default function setAxios() {
         response => {
             if(response.status == 200) {
                 const data = response.data
+                store.commit('hideLoading')
                 //跟后台商量账号密码不对的时候，code定多少需要重新登陆，并且清除vuex里的token和localstorage里的token
                 if(data.code == -100 && data.result == false) {
                     //先清除vuex里的token

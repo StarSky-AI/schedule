@@ -93,8 +93,11 @@ import { NoticeBar } from 'vant';
 				method: 'post',
 				url: 'http://tsgc.qhd58.net/public/index.php/weixin/index/queryNotice'
 			}).then(res => {
-				this.inform = res.data;
-				console.log(res)
+				if(res.result === true) {
+					
+					this.inform = res.data;
+					console.log(res)
+				}	
 			}).catch(error => {
 				console.log(error);
 			})

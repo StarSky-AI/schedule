@@ -1,19 +1,19 @@
 <template>
 	<div class="menu">
         <div class="countdown flex">
-            <p class="flex" v-if="end_time">倒计时 :&nbsp;<count-down :end-time="end_time*1000"></count-down></p>
-            <p>周五之前任意修改</p>
+            <p class="flex">倒计时 :&nbsp;<count-down :end-time="end_time*1000"></count-down></p>
+            <p>一经选择不可修改，请慎重选择！</p>
         </div>
         <van-tabs v-model="active" animated swipeable>
             <van-tab title="周六">
                 <ul class="menu-select">
-                    <li v-for="(item, index) in site6.site_id" :key="index" :class="{active1:item.is_select}" @click="select(item.name,'selectSite6')">{{item.name}}
+                    <li v-for="(item, index) in site6.site_id" :key="index" :class="{active1:item.name === selectSite6}" @click="select(item.name,'selectSite6')">{{item.name}}
                     </li>
                 </ul>
             </van-tab>
             <van-tab title="周日">
                 <ul class="menu-select">
-                    <li v-for="(items, index) in site7.site_id" :key="index" :class="{active1:items.is_select}" @click="select(items.name, 'selectSite7')">{{items.name}}
+                    <li v-for="(items, index) in site7.site_id" :key="index" :class="{active1:items.name === selectSite7}" @click="select(items.name, 'selectSite7')">{{items.name}}
                     </li>
                 </ul>               
             </van-tab>            
@@ -38,6 +38,10 @@
     .van-popup--bottom {
         bottom: 54/@rem;
         z-index: 100;
+    }
+    .menu {
+        width: 100%;
+        padding-bottom: 54/@rem;
     }
     .countdown {
         width: 100%;
@@ -212,7 +216,37 @@ import countDown from '@/components/countdown'
                 if(!this.show) {
                     this.show = true;
                 }else {
-                    console.log("提交")
+                    console.log(this.site6)
+                    let site_id = "",site_line_id="";
+                    this.site6.map((item) => {
+                        debugger
+                    item.site_id.map((childItem) => {
+                    if(childItem.is_select === true) {
+                        site_id += childItem.site_id + this.value;
+                        site_line_id = childItem.site_line_id;
+                    }
+                    return childItem;
+                    })
+                    return item;
+                    })
+                    console.log(site_id)
+                    console.log(site_line_id)
+                    this.$http({
+                        method: 'post',
+                        // url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index',
+                        url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/sitere',
+                        data: {
+                            id: window.localStorage.getItem('id'),
+                            site_id: '',
+                            site_line_id: ''
+                        }
+                    }).then(res => {
+                        console.log(res)
+ 
+
+                    }).catch(error => {
+                        console.log(error);
+                    })
                 }
             },
             select(name, obj) {
@@ -229,15 +263,13 @@ import countDown from '@/components/countdown'
 			this.$http({
                 method: 'post',
                 // url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index',
-                url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index',
-                data: {
-                    
-                }
+                url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index'
 			}).then(res => {
                 console.log(res)
                 this.site6 = res.data.zhandian[0];
                 this.site7 = res.data.zhandian[1];
                 this.end_time = res.data.zhandian[1].end_time;
+
 			}).catch(error => {
 				console.log(error);
 			})              

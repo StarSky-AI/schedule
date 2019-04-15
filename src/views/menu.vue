@@ -1,7 +1,7 @@
 <template>
 	<div class="menu">
         <div class="countdown flex">
-            <p class="flex" v-if="end_time[3]">倒计时 :&nbsp;<count-down :end-time="end_time[3]*1000"></count-down></p>
+            <p class="flex">倒计时 :&nbsp;<count-down :end-time="end_time[3]*1000"></count-down></p>
             <p>一经选择不可修改，请慎重选择！</p>
 
         </div>
@@ -13,7 +13,7 @@
         </ul>
         <div class="sku flex">
             <div>已选数量：{{num}}</div>
-            <button @click="onSelect" ref="myButton">提交</button>
+            <button @click="onSelect" :disabled="NoOnclick">提交</button>
         </div>
         <van-actionsheet v-model="show" class="actionsheet">
             <div class="box">
@@ -36,6 +36,9 @@
     .van-popup--bottom {
         bottom: 54/@rem;
         z-index: 100;
+    }
+    .menu {
+        padding-bottom: 54/@rem;
     }
     .countdown {
         width: 100%;
@@ -205,7 +208,8 @@ import { Dialog } from 'vant';
                 show: false,
                 show2: true,
                 num : 0,
-                message: null
+                message: null,
+                NoOnclick: false
             }
         },
         computed: {
@@ -328,8 +332,10 @@ import { Dialog } from 'vant';
                 console.log(res);
                 this.message = res.msg;
                 if(this.message == 3) {
+                    //信息框
                     this.show2 == true;
-                    this.$refs.myButton.disabled = true;
+                    this.NoOnclick = true;
+                    console.log(this.NoOnclick);
                 }
                 this.end_time = res.data.map((item) => {
                     return item.end_time;
