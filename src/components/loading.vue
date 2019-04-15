@@ -27,11 +27,11 @@
     text-align: center;
   }
   .loading img{
-      width: 200/@rem;
+      width: 300/@rem;
       height: 200/@rem;
       position: absolute;
       left: 50%;
-      margin-left: -100/@rem;
+      margin-left: -150/@rem;
       margin-top: -100/@rem;
       top: 50%;
   }

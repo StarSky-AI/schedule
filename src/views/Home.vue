@@ -91,7 +91,8 @@ import { NoticeBar } from 'vant';
 		created() {
 			this.$http({
 				method: 'post',
-				url: 'http://tsgc.qhd58.net/public/index.php/weixin/index/queryNotice'
+				url: 'http://tsgc.qhd58.net/public/index.php/weixin/index/queryNotice',
+				id: window.localStorage.getItem('id')
 			}).then(res => {
 				if(res.result === true) {
 					

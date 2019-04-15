@@ -13,7 +13,7 @@
         </ul>
         <div class="sku flex">
             <div>已选数量：{{num}}</div>
-            <button @click="onSelect" :disabled="NoOnclick">提交</button>
+            <button @click="onSelect" :disabled="disabled">提交</button>
         </div>
         <van-actionsheet v-model="show" class="actionsheet">
             <div class="box">
@@ -206,10 +206,10 @@ import { Dialog } from 'vant';
                 food: [],
                 changeRed:-1,
                 show: false,
-                show2: true,
+                show2: false,
                 num : 0,
-                message: null,
-                NoOnclick: false
+                message: 3,
+                disabled: false
             }
         },
         computed: {
@@ -330,11 +330,11 @@ import { Dialog } from 'vant';
                 }
 			}).then(res => {
                 console.log(res);
-                this.message = res.msg;
-                if(this.message == 3) {
+                if(res.msg === 3) {
+                    
                     //信息框
-                    this.show2 == true;
-                    this.NoOnclick = true;
+                    this.show2 = true;
+                    this.disabled = true;
                     console.log(this.NoOnclick);
                 }
                 this.end_time = res.data.map((item) => {

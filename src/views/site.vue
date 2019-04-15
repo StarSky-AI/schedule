@@ -20,16 +20,17 @@
         </van-tabs>
         <div class="sku flex">
             <div>已选：{{order}}</div>
-            <button @click="onSelect()">提交</button>
+            <button @click="onSelect()" :disabled="disabled">提交</button>
         </div>
         <van-actionsheet v-model="show" class="actionsheet">
             <div class="box">
                 <h2 class="flex">
-                    <span>乘车人数：</span><van-stepper v-model="value" :title="people" />
+                    <span>乘车人数：</span><van-stepper v-model="value" />
                     <span><i @click="del()"></i>删除</span>
                 </h2>
             </div>
         </van-actionsheet>
+        <van-popup v-model="show2" :close-on-click-overlay="false" style="width:200px;height:80px;line-height:80px;text-align:center;">本周已投票！</van-popup>
 	</div>
 </template>
 
@@ -203,7 +204,8 @@ import countDown from '@/components/countdown'
                 selectSite7:'',
                 //计步器
                 value: 0,
-                people: '乘车人数'
+                show2: false,
+                disabled: false
             }
         },
         computed: {
@@ -217,28 +219,28 @@ import countDown from '@/components/countdown'
                     this.show = true;
                 }else {
                     console.log(this.site6)
-                    let site_id = "",site_line_id="";
-                    this.site6.map((item) => {
-                        debugger
-                    item.site_id.map((childItem) => {
-                    if(childItem.is_select === true) {
-                        site_id += childItem.site_id + this.value;
-                        site_line_id = childItem.site_line_id;
-                    }
-                    return childItem;
+                    let site_id = "",site_id2 = "";
+                    this.site6.site_id.map((abc) => {
+                        if(abc.name === this.selectSite6) {
+                        site_id += abc.site_id +"," + this.value + "," + abc.site_line_id;
+                        }           
+                        return abc
                     })
-                    return item;
-                    })
+                    this.site7.site_id.map((qwe) => {
+                        if(qwe.name === this.selectSite7) {
+                        site_id2 += qwe.site_id +"," + this.value + "," + qwe.site_line_id;
+                        }           
+                        return qwe
+                    })   
+                    let siteId = site_id + "-" + site_id2 + "";               
                     console.log(site_id)
-                    console.log(site_line_id)
                     this.$http({
                         method: 'post',
                         // url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index',
                         url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/sitere',
                         data: {
                             id: window.localStorage.getItem('id'),
-                            site_id: '',
-                            site_line_id: ''
+                            site_id: siteId
                         }
                     }).then(res => {
                         console.log(res)
@@ -259,13 +261,18 @@ import countDown from '@/components/countdown'
         },
 		created() {
             // let add_time = "2019-04-02";
-            
 			this.$http({
                 method: 'post',
                 // url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index',
                 url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index'
 			}).then(res => {
                 console.log(res)
+                if(res.msg === 3) {
+                    //信息框
+                    this.show2 = true;
+                    this.disabled = true;
+                    console.log(this.NoOnclick);
+                }
                 this.site6 = res.data.zhandian[0];
                 this.site7 = res.data.zhandian[1];
                 this.end_time = res.data.zhandian[1].end_time;
