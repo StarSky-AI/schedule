@@ -1,7 +1,12 @@
 <!--  author:   Date:  -->
 <template>
-  <div class="style" v-if="day">
-    <span>{{day}}</span> : <span>{{hour}}</span> : <span>{{minute}}</span> : <span>{{second}}</span>
+  <div class="style">
+    <div v-if="isShow">
+      <span>{{day}}</span> : <span>{{hour}}</span> : <span>{{minute}}</span> : <span>{{second}}</span>
+    </div>
+    <div v-else>
+      <i>结束</i>
+    </div>
   </div>
 </template>
 
@@ -18,11 +23,12 @@ export default {
         minute: "",
         second: "",
         timeout: null,
+        isShow: true
     };
   },
   props: {
     endTime: {
-      type: [String, Number],
+      type: [Number, Number],
       default: null
     }
   },
@@ -42,11 +48,16 @@ export default {
         this.hour = shengyuH
         this.minute = shengyuM
         this.second = shengyuS
-        if(this.day + this.hour + this.minute + this.second === 0) {
+        if(this.day + this.hour + this.minute + this.second <= 0) {
           clearTimeout(this.timeout)
+          this.isShow = false;
+          this.day = this.hour = this.minute = this.second = 0;
+        }else {
+            this.recordTime()
         }
-        this.recordTime()
+        
       }, 1000)
+      
     }
   },
   computed: {
@@ -59,7 +70,7 @@ export default {
     endTime: {
       handler: function(newVal) {
         
-        if(newVal === 0) {
+        if(newVal) {
             clearTimeout(this.timeout)
             this.recordTime()
         }

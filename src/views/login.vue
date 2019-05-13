@@ -1,7 +1,7 @@
 <template>
   <div class="login">
 	  <h1 class="logo">
-		  <img src="../assets/touxiang.jpg" alt="">
+		  <img src="../assets/touxiang.png" alt="">
 		  <span>登陆</span>
 	  </h1>
 

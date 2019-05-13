@@ -1,7 +1,7 @@
 <template>
 	<div class="menu">
         <div class="countdown flex">
-            <p class="flex">倒计时 :&nbsp;<count-down :end-time="end_time[3]*1000"></count-down></p>
+            <p class="flex">倒计时 :&nbsp;<count-down :end-time="end_time*1000"></count-down></p>
             <p>一经选择不可修改，请慎重选择！</p>
 
         </div>
@@ -13,7 +13,8 @@
         </ul>
         <div class="sku flex">
             <div>已选数量：{{num}}</div>
-            <button @click="onSelect" :disabled="disabled">提交</button>
+            <button @click="onSelect" v-if="disabled===false">提交</button>
+            <button @click="onSelect" v-else :disabled="disabled" class="hui">提交</button>
         </div>
         <van-actionsheet v-model="show" class="actionsheet">
             <div class="box">
@@ -27,7 +28,7 @@
                 </div>
             </div>
         </van-actionsheet>
-        <van-popup v-model="show2" :close-on-click-overlay="false" style="width:200px;height:80px;line-height:80px;text-align:center;">本周已投票！</van-popup>
+       
 	</div>
 </template>
 
@@ -140,6 +141,12 @@
             font-size: 18/@rem;
             text-align: center;
         }
+        .hui {
+            flex: 1;
+            background: #ccc;
+            font-size: 18/@rem;
+            text-align: center;
+        }
     }
 
     .actionsheet {
@@ -215,7 +222,7 @@ import { Dialog } from 'vant';
         computed: {
             order() {
                 let order = [];                
-                console.log(this.food,"213123")
+
                 this.food.map(item => {
                     item.food.map((key) => {
                         if(key.is_select) {
@@ -223,21 +230,23 @@ import { Dialog } from 'vant';
                         }
                     })
 
-                })     
-                console.log(order,"``");           
-                return order             
+                })                
+                return order;             
             }            
         },
         methods: {
             selectFood(items) {
                 //选中
-                items.is_select = !items.is_select  
-                console.log(items.is_select)
+                items.is_select = !items.is_select;  
+                
                 if(items.is_select == true) {
                     this.num ++;
                     
                 }else {
                     this.num --;
+                    if(this.num <= 0) {
+                        this.num = 0;
+                    }
                 }
             },
             onSelect() {
@@ -249,22 +258,20 @@ import { Dialog } from 'vant';
                 this.food.map((item) => {
                 item.food.map((childItem) => {
                 if(childItem.is_select === true) {
-                    foodId += childItem.food_id + "-";
-                    menuId = childItem.menu_id;
+                    foodId += childItem.menu_id + "," + childItem.food_id + "-";
+                    
                 }
                 return childItem;
                 })
                 return item;
-                })
+                })  
                 console.log(foodId)
-                console.log(menuId)  
                     this.$http({
                         method: 'post',
                         url: 'http://tsgc.qhd58.net/public/index.php/weixin/food/foodVote',
                         data: {
                         id: window.localStorage.getItem('id'),
-                        food_id: foodId,
-                        menu_id: menuId
+                        food_id: foodId
                     }
                     }).then(res => {
                         
@@ -290,7 +297,6 @@ import { Dialog } from 'vant';
             },
             //清空
             empty() {
-                console.log(this.food,"food");
                 let food = this.food.map((item) => {
                     item.food.map((childItem) => {
                         childItem.is_select = false;
@@ -321,6 +327,7 @@ import { Dialog } from 'vant';
             }
         },
 		created() {
+            
 			this.$http({
                 method: 'post',
                 // url: 'http://tsgc.qhd58.net/public/index.php/api/weixin/food/queryFoodList',
@@ -330,18 +337,30 @@ import { Dialog } from 'vant';
                 }
 			}).then(res => {
                 console.log(res);
-                if(res.msg === 3) {
-                    
-                    //信息框
-                    this.show2 = true;
+                if(res.msg === 3) { 
+                    var len = [];   let haha = [];
+                    len = res.data.map((item) => {
+                        item.food.filter((child)=> {
+                            if(child.is_select === 1) {
+                                return haha = len.push(child.is_select)
+                            }                            
+                                                          
+                        })
+                        console.log(len.length) // 16
+                        return item;
+                    })   
+                    console.log(len.length)  //5   
+                    this.num = haha;           
                     this.disabled = true;
-                    console.log(this.NoOnclick);
                 }
                 this.end_time = res.data.map((item) => {
                     return item.end_time;
                 })
-                this.food = res.data;  
-                console.log(res.data, "res.data");              
+                this.end_time = Math.max.apply(null, res.data.map((item) =>{ 
+                    return item.end_time;
+                }))
+                console.log(this.end_time)
+                this.food = res.data;               
 			}).catch(error => {
 				console.log(error);
 			})            

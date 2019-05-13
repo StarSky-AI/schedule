@@ -1,26 +1,22 @@
 <template>
 	<div class="menu">
         <div class="countdown flex">
-            <p class="flex">倒计时 :&nbsp;<count-down :end-time="end_time*1000"></count-down></p>
+            <p class="flex" v-if="end_time">倒计时 :&nbsp;<count-down :end-time="end_time*1000"></count-down></p>
             <p>一经选择不可修改，请慎重选择！</p>
         </div>
-        <van-tabs v-model="active" animated swipeable>
-            <van-tab title="周六">
-                <ul class="menu-select">
-                    <li v-for="(item, index) in site6.site_id" :key="index" :class="{active1:item.name === selectSite6}" @click="select(item.name,'selectSite6')">{{item.name}}
-                    </li>
-                </ul>
-            </van-tab>
-            <van-tab title="周日">
-                <ul class="menu-select">
-                    <li v-for="(items, index) in site7.site_id" :key="index" :class="{active1:items.name === selectSite7}" @click="select(items.name, 'selectSite7')">{{items.name}}
-                    </li>
-                </ul>               
-            </van-tab>            
+
+        <van-tabs>
+        <van-tab v-for="(item,index) in site" :title="item.xingqi" :key="index">
+            <ul class="menu-select">
+                <li v-for="(items,index3) in item.site" :key="index3" :class="{'active1': index2 == items.wyid || items.is_select}" @click="flag && select(items.wyid,items.site_line_id)">{{items.name}}</li>
+            </ul> 
+        </van-tab>
         </van-tabs>
+
         <div class="sku flex">
             <div>已选：{{order}}</div>
-            <button @click="onSelect()" :disabled="disabled">提交</button>
+            <button @click="onSelect" v-if="disabled===false">提交</button>
+            <button v-else :disabled="disabled" class="hui">提交</button>
         </div>
         <van-actionsheet v-model="show" class="actionsheet">
             <div class="box">
@@ -30,7 +26,6 @@
                 </h2>
             </div>
         </van-actionsheet>
-        <van-popup v-model="show2" :close-on-click-overlay="false" style="width:200px;height:80px;line-height:80px;text-align:center;">本周已投票！</van-popup>
 	</div>
 </template>
 
@@ -133,6 +128,12 @@
             font-size: 18/@rem;
             text-align: center;
         }
+        .hui {
+            flex: 1;
+            background: #ccc;
+            font-size: 18/@rem;
+            text-align: center;
+        }
     }
 
     .actionsheet {
@@ -186,7 +187,8 @@
 </style>
 
 <script>
-import countDown from '@/components/countdown'
+import countDown from '@/components/countdown';
+import { Dialog } from 'vant';
 	export default {
         name: 'Menu',
         components: {
@@ -196,86 +198,85 @@ import countDown from '@/components/countdown'
             return {
                 active: '',
                 show: false,
-                isActive: false,
-                site6: [],
-                site7: [],
                 end_time: '',
-                selectSite6:'',
-                selectSite7:'',
                 //计步器
-                value: 0,
-                show2: false,
-                disabled: false
+                value: 1,
+                disabled: false,
+                site: '',
+                index2: 0,
+				site_id: '',
+				siteId: '',
+				name: '',
+				flag: true,
+                showActive: false
             }
         },
         computed: {
-            order() {
-                return `${this.selectSite6}${this.selectSite7 ? `，${this.selectSite7}`: ''}`;             
+            order() {               
+            
             }            
         },
         methods: {
             onSelect() {
+
                 if(!this.show) {
                     this.show = true;
                 }else {
-                    console.log(this.site6)
-                    let site_id = "",site_id2 = "";
-                    this.site6.site_id.map((abc) => {
-                        if(abc.name === this.selectSite6) {
-                        site_id += abc.site_id +"," + this.value + "," + abc.site_line_id;
-                        }           
-                        return abc
-                    })
-                    this.site7.site_id.map((qwe) => {
-                        if(qwe.name === this.selectSite7) {
-                        site_id2 += qwe.site_id +"," + this.value + "," + qwe.site_line_id;
-                        }           
-                        return qwe
-                    })   
-                    let siteId = site_id + "-" + site_id2 + "";               
-                    console.log(site_id)
-                    this.$http({
-                        method: 'post',
-                        // url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index',
-                        url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/sitere',
-                        data: {
-                            id: window.localStorage.getItem('id'),
-                            site_id: siteId
-                        }
-                    }).then(res => {
-                        console.log(res)
- 
+					this.siteId = this.site_id + ',' + this.value + '-';
+					if(this.siteId) {
+						this.$http({
+							method: 'post',
+							// url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index',
+							url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/sitere',
+							data: {
+								id: window.localStorage.getItem('id'),
+								site_id: this.siteId,
+								value: this.value
+							}
+						}).then(res => {
+							console.log(res)
+								Dialog.alert({
+									message: '投票成功！'
+								}).then(() => {
+									//刷新页面
+									// location. reload()
+								});
 
-                    }).catch(error => {
-                        console.log(error);
-                    })
+						}).catch(error => {
+							console.log(error);
+						})						
+					}
+					
+
                 }
             },
-            select(name, obj) {
-                this[obj] = this[obj] === name ? '': name;
+            select(id, line_id) {				
+				
+				this.index2 = id;
+				this.site_id += this.index2;
+				console.log(this.site_id)
             },
             del() {
                 this.value = 1;
                 this.show = false;
             }
         },
-		created() {
+		created() {			
+			console.log(this.site_id)
             // let add_time = "2019-04-02";
 			this.$http({
                 method: 'post',
                 // url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index',
-                url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index'
+                url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index',
+                data: {
+                    id: window.localStorage.getItem('id')
+                }
+
 			}).then(res => {
                 console.log(res)
-                if(res.msg === 3) {
-                    //信息框
-                    this.show2 = true;
-                    this.disabled = true;
-                    console.log(this.NoOnclick);
-                }
-                this.site6 = res.data.zhandian[0];
-                this.site7 = res.data.zhandian[1];
-                this.end_time = res.data.zhandian[1].end_time;
+				console.log(this.value)
+                this.site = res.data;
+                this.end_time = res.data[6].end_time;
 
 			}).catch(error => {
 				console.log(error);
