@@ -8,22 +8,23 @@
         <van-tabs>
         <van-tab v-for="(item,index) in site" :title="item.xingqi" :key="index">
             <ul class="menu-select">
-                <li v-for="(items,index3) in item.site" :key="index3" :class="{'active1': index2 == items.wyid || items.is_select}" @click="flag && select(items.wyid,items.site_line_id)">{{items.name}}</li>
+                <li v-for="(items,index3) in item.site" :key="index3" :class="{'active1': items.is_select}" @click="flag && select(items)">{{items.name}}</li>
             </ul> 
         </van-tab>
         </van-tabs>
 
         <div class="sku flex">
-            <div>已选：{{order}}</div>
             <button @click="onSelect" v-if="disabled===false">提交</button>
             <button v-else :disabled="disabled" class="hui">提交</button>
         </div>
         <van-actionsheet v-model="show" class="actionsheet">
             <div class="box">
-                <h2 class="flex">
-                    <span>乘车人数：</span><van-stepper v-model="value" />
-                    <span><i @click="del()"></i>删除</span>
+                <h2 class="flex" v-for="(item,index) in order" :key="index">
+                    <span>{{item.name}}</span>
+					<van-stepper v-model="value[index]" />
+                    <span><i @click="del(item.wyid)"></i>删除</span>
                 </h2>
+				
             </div>
         </van-actionsheet>
 	</div>
@@ -202,8 +203,9 @@ import { Dialog } from 'vant';
                 //计步器
                 value: 1,
                 disabled: false,
-                site: '',
-                index2: 0,
+                site: [],
+                index2: '',
+				index3: [],
 				site_id: '',
 				siteId: '',
 				name: '',
@@ -212,9 +214,19 @@ import { Dialog } from 'vant';
             }
         },
         computed: {
-            order() {               
-            
-            }            
+            order() {
+                let order = [];                
+                this.site.map(item => {
+                    item.site.map((key) => {
+                        if(key.is_select) {
+                            order.push(key)
+                        }
+                    })
+
+                })                
+                return order; 
+				console.log(this.site)
+            }          
         },
         methods: {
             onSelect() {
@@ -250,15 +262,15 @@ import { Dialog } from 'vant';
 
                 }
             },
-            select(id, line_id) {				
+            select(items) {				
 				
-				this.index2 = id;
-				this.site_id += this.index2;
-				console.log(this.site_id)
+				items.is_select = !items.is_select;  
+				
+				
             },
-            del() {
+            del(id) {
                 this.value = 1;
-                this.show = false;
+                this.tasks.splice(index,1);
             }
         },
 		created() {			
@@ -276,7 +288,7 @@ import { Dialog } from 'vant';
                 console.log(res)
 				console.log(this.value)
                 this.site = res.data;
-                this.end_time = res.data[6].end_time;
+                this.end_time = res.data[res.data.length-1].end_time;
 
 			}).catch(error => {
 				console.log(error);
