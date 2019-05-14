@@ -7,22 +7,22 @@
 
         <van-tabs>
         <van-tab v-for="(item,index) in site" :title="item.xingqi" :key="index">
-            <ul class="menu-select">
-                <li v-for="(items,index3) in item.site" :key="index3" :class="{'active1': items.is_select}" @click="flag && select(items)">{{items.name}}</li>
+            <ul class="menu-select">				
+                <li v-for="(items,index3) in item.site" :key="index3" :class="{'active':items.is_select}" @click="select(item,index3)">{{items.name}}</li>
             </ul> 
         </van-tab>
         </van-tabs>
 
         <div class="sku flex">
             <button @click="onSelect" v-if="disabled===false">提交</button>
-            <button v-else :disabled="disabled" class="hui">提交</button>
+            <!-- <button v-else :disabled="disabled" class="hui">提交</button> -->
         </div>
         <van-actionsheet v-model="show" class="actionsheet">
             <div class="box">
                 <h2 class="flex" v-for="(item,index) in order" :key="index">
                     <span>{{item.name}}</span>
-					<van-stepper v-model="value[index]" />
-                    <span><i @click="del(item.wyid)"></i>删除</span>
+					<van-stepper v-model="item[index]" />
+                    <span v-if="item.is_select_dt==0"><i @click="del(index)"></i>删除</span>
                 </h2>
 				
             </div>
@@ -100,7 +100,7 @@
             color: #fff;
             font-size: 10/@rem;
         }
-        .active1 {
+        .active {
             background: url("../assets/images/site/site_bg2.png") no-repeat;
             background-size: 100% 30/@rem;
             color: #fff;
@@ -204,37 +204,41 @@ import { Dialog } from 'vant';
                 value: 1,
                 disabled: false,
                 site: [],
-                index2: '',
-				index3: [],
-				site_id: '',
+				order:[],
 				siteId: '',
-				name: '',
-				flag: true,
-                showActive: false
+				Newsite: [],
+				idx: 0,
+				selectData: [],
+				flag: true
             }
-        },
-        computed: {
-            order() {
-                let order = [];                
-                this.site.map(item => {
-                    item.site.map((key) => {
-                        if(key.is_select) {
-                            order.push(key)
-                        }
-                    })
-
-                })                
-                return order; 
-				console.log(this.site)
-            }          
         },
         methods: {
             onSelect() {
-
+				
+				
+				let selectList = [];
+				// order
+				 this.site.map(e=>e.site.map(v=>{
+					if(v.is_select==1 && v.is_select_dt==0){
+						selectList.push(v);	
+					}
+				}));
+				let list = this.order = selectList;
+				list.map(item=> {
+					this.siteId += item.site_id + ',' + item.site_line_id + ',' + list[0]+ '-';
+				})
+				console.log(list)
+				if(list.length==0){
+					this.$toast("请选择一个吧");
+					return;
+				}
                 if(!this.show) {
                     this.show = true;
                 }else {
-					this.siteId = this.site_id + ',' + this.value + '-';
+					
+					// let item = list[0];
+					// this.siteId += item.site_id + ',' + item.site_line_id + ',' + item['0']+ '-';
+					// console.log(this.siteId)
 					if(this.siteId) {
 						this.$http({
 							method: 'post',
@@ -242,8 +246,8 @@ import { Dialog } from 'vant';
 							url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/sitere',
 							data: {
 								id: window.localStorage.getItem('id'),
-								site_id: this.siteId,
-								value: this.value
+								site_id: this.siteId
+								
 							}
 						}).then(res => {
 							console.log(res)
@@ -262,20 +266,23 @@ import { Dialog } from 'vant';
 
                 }
             },
-            select(items) {				
-				
-				items.is_select = !items.is_select;  
-				
-				
+            select(list,index) {	
+				let item = list.site[index];
+				if(item.is_select_dt == 0){
+					let status = item.is_select;
+					list.site.map(e=>{
+						e.is_select = 0;
+					});
+					item.is_select = status==0?1:0;
+					list.site[index] = item;
+				}
             },
-            del(id) {
-                this.value = 1;
-                this.tasks.splice(index,1);
+            del(index) {				
+                this.order.splice(index,1);
             }
         },
-		created() {			
-			console.log(this.site_id)
-            // let add_time = "2019-04-02";
+		created() {						
+
 			this.$http({
                 method: 'post',
                 // url: 'http://tsgc.qhd58.net/public/index.php/weixin/site/index',
@@ -289,6 +296,7 @@ import { Dialog } from 'vant';
 				console.log(this.value)
                 this.site = res.data;
                 this.end_time = res.data[res.data.length-1].end_time;
+
 
 			}).catch(error => {
 				console.log(error);
