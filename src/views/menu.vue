@@ -117,14 +117,14 @@ import { Dialog } from 'vant';
                 this.isShow = true;
                 console.log(this.menu);
                 
-                // this.menu.map((item) => {
-                //     if(item.is_select === 1) {
-                        
-                        
-                //         this.disabled = true;
-                //     }
+                // 这段代码很有用！，需要循环找到dtsfyx
+                // if(item.dtsfyx) {
+                //     return item.is_select;
 
-                // })
+                // }else if(!item.dtsfyx || !item.is_select) {
+
+                //     item.is_select = !item.is_select;
+                // }
                 
                 let [...endtime] = this.menu.map((item) => {
                     if(item.end_time) {
@@ -139,18 +139,14 @@ import { Dialog } from 'vant';
         },
         methods: {
             selectFood(item,index) {
-                if(item.dtsfyx || item.is_select) {
-                    
+                if(item.dtsfyx) {
                     return item.is_select;
 
-                }else {
-                    console.log(item.food_id)
+                }else if(!item.dtsfyx || !item.is_select) {
 
                     item.is_select = !item.is_select;
                 }
 
-               
-                
                 if(item.is_select == true) {
                     this.num ++;
                 }else {
