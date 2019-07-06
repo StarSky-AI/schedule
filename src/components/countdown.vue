@@ -88,6 +88,8 @@ export default {
       border: 2/@rem solid #fff;
       display: inline-block;
       width: 30/@rem;
+      height: 27/@rem;
+      line-height: 27/@rem;
       text-align: center;
     }
   }
