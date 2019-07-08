@@ -33,4 +33,7 @@ export default {
     width: 100%;
     height: 100%;
   }
+  .van-tab span {
+    display: inline-block !important;
+  }
 </style>

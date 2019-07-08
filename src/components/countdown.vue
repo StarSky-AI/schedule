@@ -44,10 +44,22 @@ export default {
         shengyuM=parseInt(H/(60*1000)),//除去天的毫秒数转换成分钟
         M=H-shengyuM*60*1000,//除去天、小时、分的毫秒数
         shengyuS=parseInt((shenyu-shengyuD*60*60*24*1000-shengyuH*60*60*1000-shengyuM*60*1000)/1000)//除去天、小时、分的毫秒数转化为秒
-        this.day = shengyuD
-        this.hour = shengyuH
-        this.minute = shengyuM
-        this.second = shengyuS
+        this.day = shengyuD;
+        if(this.day < 10) {
+          this.day = "0" + this.day;
+        }
+        this.hour = shengyuH;
+        if(this.hour < 10) {
+          this.hour = "0" + this.hour;
+        }
+        this.minute = shengyuM;
+        if(this.minute < 10) {
+          this.minute = "0" + this.minute;
+        }
+        this.second = shengyuS;
+        if(this.second < 10) {
+          this.second = "0" + this.second;
+        }
         if(this.day + this.hour + this.minute + this.second <= 0) {
           clearTimeout(this.timeout)
           this.isShow = false;

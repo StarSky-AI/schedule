@@ -35,8 +35,7 @@
         </van-tabs>
         <div class="sku flex">
             <div>已选数量：{{num}}</div>
-            <button @click="onSelect" v-if="disabled === false">提交</button>
-            <button @click="onSelect"class="hui" v-if="disabled" :disabled="disabled">提交</button>
+            <button @click="onSelect" :class="{'hui': disabled}" :disabled="disabled">提交</button>
         </div>
         <van-actionsheet v-model="show" class="actionsheet">
             <div class="box2">
@@ -73,7 +72,7 @@ import { Dialog } from 'vant';
                 //菜品数组
                 menu: [],
                 //横向选项卡高亮
-                active: 2,
+                active: 0,
                 //数量
                 num: 0,
                 //禁止提交开关
@@ -116,16 +115,25 @@ import { Dialog } from 'vant';
                 this.menu = res.data;
                 this.isShow = true;
                 console.log(this.menu);
-                
-                // 这段代码很有用！，需要循环找到dtsfyx
-                // if(item.dtsfyx) {
-                //     return item.is_select;
-
-                // }else if(!item.dtsfyx || !item.is_select) {
-
-                //     item.is_select = !item.is_select;
-                // }
-                
+                let p = [];
+                this.menu.map((item) => {
+                    item.zaocan.map((items) => {
+                        if(items.is_select) {
+                            p.push(items.is_select);
+                        }                        
+                    })
+                    item.wucan.map((items) => {
+                        if(items.is_select) {
+                            p.push(items.is_select);
+                        }  
+                    })
+                    item.wancan.map((items) => {
+                        if(items.is_select) {
+                            p.push(items.is_select);
+                        } 
+                    }) 
+                    this.num = p.length;                                      
+                })        
                 let [...endtime] = this.menu.map((item) => {
                     if(item.end_time) {
                         return item.end_time;
@@ -140,10 +148,12 @@ import { Dialog } from 'vant';
         methods: {
             selectFood(item,index) {
                 if(item.dtsfyx) {
+                    this.$toast("已经投过票了！");
+                    this.disabled = item.dtsfyx;
                     return item.is_select;
 
                 }else if(!item.dtsfyx || !item.is_select) {
-
+                    this.disabled = false;
                     item.is_select = !item.is_select;
                 }
 
@@ -161,7 +171,7 @@ import { Dialog } from 'vant';
                 if(!this.show) {
                     this.show = true;
                 }else {
-                    
+
                     let foodId = "", foodId2 = "", foodId3 = "";
                     this.menu.map((item) => {
                         item.zaocan.map((childItem) => {
@@ -344,7 +354,7 @@ import { Dialog } from 'vant';
                     flex-wrap: wrap;
                     div {
                         text-align: center;
-                        padding: 2/@rem 15/@rem;
+                        padding: 0 15/@rem;
                         margin-bottom: 10/@rem;
                         border-radius: 20/@rem;
                         box-sizing: border-box;
@@ -352,6 +362,7 @@ import { Dialog } from 'vant';
                         margin-bottom: 15/@rem;
                         font-size: .16rem;
                         height: .3rem;
+                        line-height: .3rem;
                     }
 
                 }
