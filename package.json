@@ -7,7 +7,7 @@
     "server": "vue-cli-service serve"
   },
   "dependencies": {
-    "axios": "^0.18.0",
+    "axios": "^0.21.1",
     "less": "^2.7.3",
     "less-loader": "^4.1.0",
     "vant": "^1.6.12",
